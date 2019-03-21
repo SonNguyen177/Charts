@@ -14,6 +14,8 @@ import CoreGraphics
 
 open class PieChartDataEntry: ChartDataEntry
 {
+    public var isShowLabel: Bool = true
+    
     public required init()
     {
         super.init()

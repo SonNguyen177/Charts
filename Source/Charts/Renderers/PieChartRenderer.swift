@@ -369,11 +369,11 @@ open class PieChartRenderer: DataRenderer
                 let transformedAngle = rotationAngle + angle * CGFloat(phaseY)
 
                 let value = usePercentValuesEnabled ? e.y / yValueSum * 100.0 : e.y
-                let valueText = formatter.stringForValue(
+                let valueText = (pe?.isShowLabel ?? true ) ? formatter.stringForValue(
                     value,
                     entry: e,
                     dataSetIndex: i,
-                    viewPortHandler: viewPortHandler)
+                viewPortHandler: viewPortHandler) : ""
 
                 let sliceXBase = cos(transformedAngle.DEG2RAD)
                 let sliceYBase = sin(transformedAngle.DEG2RAD)
@@ -388,8 +388,8 @@ open class PieChartRenderer: DataRenderer
 
                 if drawXOutside || drawYOutside
                 {
-                    let valueLineLength1 = dataSet.valueLinePart1Length
-                    let valueLineLength2 = dataSet.valueLinePart2Length
+                    let valueLineLength1 = (pe?.isShowLabel ?? true ) ?   dataSet.valueLinePart1Length : 0
+                    let valueLineLength2 = (pe?.isShowLabel ?? true ) ? dataSet.valueLinePart2Length : 0
                     let valueLinePart1OffsetPercentage = dataSet.valueLinePart1OffsetPercentage
 
                     var pt2: CGPoint
@@ -898,6 +898,7 @@ open class PieChartRenderer: DataRenderer
         guard let formatter = dataSet.valueFormatter else { return element }
         guard let data = container.data as? PieChartData else { return element }
 
+        let pieChartDataEntry = (dataSet.entryForIndex(idx) as? PieChartDataEntry)
         var elementValueText = formatter.stringForValue(
             e.y,
             entry: e,
@@ -906,16 +907,16 @@ open class PieChartRenderer: DataRenderer
 
         if container.usePercentValuesEnabled {
             let value = e.y / data.yValueSum * 100.0
-            let valueText = formatter.stringForValue(
+            let valueText = (pieChartDataEntry?.isShowLabel ?? true) ? formatter.stringForValue(
                 value,
                 entry: e,
                 dataSetIndex: idx,
-                viewPortHandler: viewPortHandler)
+                viewPortHandler: viewPortHandler) : ""
 
             elementValueText = valueText
         }
 
-        let pieChartDataEntry = (dataSet.entryForIndex(idx) as? PieChartDataEntry)
+        
         let isCount = data.accessibilityEntryLabelSuffixIsCount
         let prefix = data.accessibilityEntryLabelPrefix?.appending("\(idx + 1)") ?? pieChartDataEntry?.label ?? ""
         let suffix = data.accessibilityEntryLabelSuffix ?? ""
